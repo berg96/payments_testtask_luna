@@ -18,7 +18,7 @@ class Settings(BaseSettings):
     POSTGRES_CONTAINER: str = Field("localhost", description="Имя контейнера с БД")
     POSTGRES_PORT: int = Field(5432, description="Порт БД")
 
-    DB_SCHEMA_DIRECTORY: str = Field("directory", description="Имя схемы БД")
+    DB_SCHEMA: str = Field("payments", description="Имя схемы БД")
 
     model_config = SettingsConfigDict(
         env_file=".env",
