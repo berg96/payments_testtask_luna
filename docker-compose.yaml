@@ -10,12 +10,14 @@ services:
     depends_on:
       postgres_db:
         condition: service_healthy
+      migrations:
+        condition: service_completed_successfully
     restart: always
     ports:
       - '8000:8000'
 
   postgres_db:
-    image: postgres
+    image: postgres:16-alpine
     restart: always
     volumes:
       - postgres_data:/var/lib/postgresql/data
@@ -28,3 +30,11 @@ services:
       timeout: 5s
       retries: 5
       start_period: 2s
+
+  migrations:
+    build: .
+    command: alembic upgrade head
+    depends_on:
+      postgres_db:
+        condition: service_healthy
+    env_file: .env
