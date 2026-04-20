@@ -9,8 +9,8 @@ from app.config.settings import settings
 class Base(DeclarativeBase):
     metadata = MetaData(schema=settings.DB_SCHEMA)
 
-    @declared_attr
-    def __tablename__(cls):
+    @declared_attr.directive
+    def __tablename__(cls) -> str:
         return cls.__name__.lower() + "s"
 
 
