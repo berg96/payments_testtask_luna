@@ -1,4 +1,3 @@
-import enum
 import uuid
 from datetime import datetime
 from decimal import Decimal
@@ -8,19 +7,8 @@ from sqlalchemy import UUID, CheckConstraint, DateTime, Enum, Numeric, String
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 
+from app.domain.enums import CurrencyEnum, PaymentStatusEnum
 from app.infrastructure.db.base import Base, TimestampMixin
-
-
-class CurrencyEnum(str, enum.Enum):
-    RUB = "RUB"
-    USD = "USD"
-    EUR = "EUR"
-
-
-class PaymentStatusEnum(str, enum.Enum):
-    PENDING = "pending"
-    SUCCEEDED = "succeeded"
-    FAILED = "failed"
 
 
 class Payment(TimestampMixin, Base):
