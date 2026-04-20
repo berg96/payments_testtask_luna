@@ -1,24 +1,10 @@
-from sqlalchemy import NullPool
-from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
-
-from app.config.settings import settings
+import models
 
 from .base import Base
-from .models.payment import Payment
-
-DATABASE_URL = settings.get_db_url()
-engine = create_async_engine(DATABASE_URL, poolclass=NullPool)
-async_session_maker = async_sessionmaker(engine, expire_on_commit=False)
-
-
-async def get_async_session():
-    async with async_session_maker() as async_session:
-        yield async_session
-
+from .session import async_session_maker
 
 __all__ = [
     "Base",
-    "Payment",
-    "get_async_session",
     "async_session_maker",
+    *models.__all__,
 ]

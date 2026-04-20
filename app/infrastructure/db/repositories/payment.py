@@ -3,9 +3,9 @@ from typing import Optional
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.domain.entities.payment import Payment as PaymentEntity
+from app.domain.entities import Payment as PaymentEntity
 from app.domain.repositories import PaymentRepository
-from app.infrastructure.db.models.payment import Payment as PaymentModel
+from app.infrastructure.db.models import Payment as PaymentModel
 
 
 def _from_orm(payment_model: PaymentModel) -> PaymentEntity:

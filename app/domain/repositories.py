@@ -1,6 +1,6 @@
 from typing import Optional, Protocol
 
-from app.domain.entities.payment import Payment
+from app.domain.entities import Payment
 
 
 class PaymentRepository(Protocol):
