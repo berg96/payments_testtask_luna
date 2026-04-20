@@ -7,6 +7,7 @@ from app.domain.repositories import PaymentRepository
 from app.infrastructure.db import async_session_maker
 from app.infrastructure.db.repositories import SqlAlchemyPaymentRepository
 from app.use_cases.create_payment import CreatePaymentUseCase
+from app.use_cases.get_payment import GetPaymentUseCase
 
 
 async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
@@ -26,3 +27,7 @@ async def get_payment_repo(session: AsyncSession = Depends(get_async_session)) -
 
 async def get_create_payment_usecase(repo: PaymentRepository = Depends(get_payment_repo)) -> CreatePaymentUseCase:
     return CreatePaymentUseCase(repo)
+
+
+async def get_get_payment_usecase(repo: PaymentRepository = Depends(get_payment_repo)) -> GetPaymentUseCase:
+    return GetPaymentUseCase(repo)

@@ -9,13 +9,13 @@ from app.domain.enums import CurrencyEnum, PaymentStatusEnum
 
 @dataclass
 class Payment:
-    idempotency_key: str
     amount: Decimal
     currency: CurrencyEnum
     description: str
     webhook_url: str
+    idempotency_key: str
     id: UUID = field(default_factory=uuid4)
-    status: PaymentStatusEnum = PaymentStatusEnum.PENDING
     payment_metadata: dict = field(default_factory=dict)
+    status: PaymentStatusEnum = PaymentStatusEnum.PENDING
     created_at: Optional[datetime] = None
     processed_at: Optional[datetime] = None

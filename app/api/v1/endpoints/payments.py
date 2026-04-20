@@ -1,10 +1,13 @@
+from uuid import UUID
+
 from fastapi import APIRouter, Depends, Header, status
 
-from app.api.deps import get_create_payment_usecase
+from app.api.deps import get_create_payment_usecase, get_get_payment_usecase
 from app.api.schemas import ErrorResponse
-from app.api.v1.schemas.payment import PaymentAccepted, PaymentCreate
+from app.api.v1.schemas.payment import PaymentAccepted, PaymentCreate, PaymentResponse
 from app.domain.entities.payment import Payment
 from app.use_cases.create_payment import CreatePaymentUseCase
+from app.use_cases.get_payment import GetPaymentUseCase
 
 router = APIRouter(prefix="/payments", tags=["Payments v1"])
 
@@ -14,10 +17,6 @@ router = APIRouter(prefix="/payments", tags=["Payments v1"])
     response_model=PaymentAccepted,
     status_code=status.HTTP_202_ACCEPTED,
     summary="Создание платежа",
-    responses={
-        401: {"model": ErrorResponse, "description": "Пользователь не авторизован"},
-        500: {"model": ErrorResponse, "description": "Внутренняя ошибка сервера"},
-    },
 )
 async def create_payment(
     data: PaymentCreate,
@@ -38,3 +37,18 @@ async def create_payment(
         status=result.status,
         created_at=result.created_at,
     )
+
+
+@router.get(
+    "/{payment_id}",
+    response_model=PaymentResponse,
+    summary="Получение информации о платеже",
+    responses={
+        404: {"model": ErrorResponse, "description": "Платёж не найден"},
+    },
+)
+async def get_payment(
+    payment_id: UUID,
+    use_case: GetPaymentUseCase = Depends(get_get_payment_usecase),
+) -> PaymentResponse:
+    return PaymentResponse.from_entity(await use_case.execute(payment_id))

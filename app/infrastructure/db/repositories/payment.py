@@ -1,4 +1,5 @@
 from typing import Optional
+from uuid import UUID
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -47,6 +48,10 @@ class SqlAlchemyPaymentRepository(PaymentRepository):
         await self._session.flush()
         await self._session.refresh(model)
         return _from_orm(model)
+
+    async def get_by_id(self, id: UUID) -> Optional[PaymentEntity]:
+        model = await self._session.get(PaymentModel, id)
+        return _from_orm(model) if model else None
 
     async def get_by_idempotency_key(self, key: str) -> Optional[PaymentEntity]:
         stmt = select(PaymentModel).where(PaymentModel.idempotency_key == key)
