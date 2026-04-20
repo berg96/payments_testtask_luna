@@ -4,7 +4,8 @@ from datetime import datetime
 from decimal import Decimal
 from typing import Optional
 
-from sqlalchemy import JSON, UUID, DateTime, Enum, Numeric, String
+from sqlalchemy import UUID, CheckConstraint, DateTime, Enum, Numeric, String
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.infrastructure.db.base import Base, TimestampMixin
@@ -27,13 +28,17 @@ class Payment(TimestampMixin, Base):
     amount: Mapped[Decimal] = mapped_column(Numeric(18, 2), nullable=False)
     currency: Mapped[CurrencyEnum] = mapped_column(Enum(CurrencyEnum, name="currency_enum"), nullable=False)
     description: Mapped[str] = mapped_column(String(255), nullable=False)
-    payment_metadata: Mapped[dict] = mapped_column("metadata", JSON, nullable=True, default=dict)
+    payment_metadata: Mapped[dict] = mapped_column("metadata", JSONB, nullable=True, default=dict)
     status: Mapped[PaymentStatusEnum] = mapped_column(
-        Enum(PaymentStatusEnum, name="payment_status_enum"),
+        Enum(
+            PaymentStatusEnum, name="payment_status_enum", values_callable=lambda enum_cls: [e.value for e in enum_cls]
+        ),
         nullable=False,
         default=PaymentStatusEnum.PENDING,
         server_default=PaymentStatusEnum.PENDING.value,
     )
     idempotency_key: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
-    webhook_url: Mapped[Optional[str]] = mapped_column(String(2048), nullable=False)
+    webhook_url: Mapped[str] = mapped_column(String(2048), nullable=False)
     processed_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
+
+    table_args = (CheckConstraint("amount > 0", name="ck_payments_amount_positive"),)
